@@ -142,7 +142,3 @@ php artisan schedule:run
 - Add user authentication to personalize article preferences.
 - Enhance filtering and sorting options.
 - Integrate additional news APIs for more content diversity.
-
-## **Contact**
-For further assistance, please contact [Your Name/Team] at [Your Email].
-
