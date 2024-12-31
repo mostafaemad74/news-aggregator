@@ -1,66 +1,148 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# News Aggregator Backend Project
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This README file provides an overview of the News Aggregator backend project, outlining its functionality, setup instructions, and implementation details.
 
-## About Laravel
+## **Project Description**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The News Aggregator is a backend service built using **Laravel** to aggregate articles from multiple news sources. It fetches data from external APIs, stores it in a local database, and provides endpoints for frontend interaction, including filtering, searching, and pagination of news articles.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## **Features**
+- Fetch articles from external news sources (e.g., NewsAPI, BBC, The New York Times).
+- Store articles in a local database to reduce redundant API calls.
+- Provide API endpoints for:
+  - Fetching all articles.
+  - Searching and filtering articles by category, source, author, or keyword.
+  - Pagination of results.
+- Regularly update articles using Laravel’s scheduler.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## **Requirements**
 
-## Learning Laravel
+- PHP (v8.1 or higher)
+- Composer
+- MySQL (or any other database supported by Laravel)
+- Laravel (v10 or higher)
+- API keys for NewsAPI, BBC, and The New York Times (or your selected APIs)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## **Setup Instructions**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 1. Clone the Repository
+```bash
+git clone <repository_url>
+cd news-aggregator
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Install Dependencies
+```bash
+composer install
+```
 
-## Laravel Sponsors
+### 3. Set Up the Environment
+Copy the `.env.example` file to `.env`:
+```bash
+cp .env.example .env
+```
+Edit the `.env` file to configure database and API keys:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=news_aggregator
+DB_USERNAME=root
+DB_PASSWORD=password
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+NEWSAPI_KEY =your_newsapi_key
+GUARDIAN_API_KEY=your_guardiaNnkey
+```
 
-### Premium Partners
+### 4. Run Migrations
+Create the database tables:
+```bash
+php artisan migrate
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 5. Test the Application
+Fetch data manually to test:
+```bash
+php artisan schedule:run
+```
 
-## Contributing
+## **Implementation Details**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### **Fetching Data**
 
-## Code of Conduct
+**Services** are responsible for interacting with external APIs and storing articles in the database:
+- **NewsApiService**: Fetches data from NewsAPI.
+- **BbcNewsApiService**: Fetches data from BBC.
+- **NewYorkNewsApiService**: Fetches data from The New York Times.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Each service uses Laravel’s HTTP client to make API requests and saves articles using a centralized `ArticleSaverService`.
 
-## Security Vulnerabilities
+### **Database Schema**
+The `articles` table schema includes:
+- `id`: Primary key
+- `title`: Title of the article
+- `description`: Short description
+- `url`: Link to the original article
+- `url_to_image`: URL to the article’s image
+- `source`: Source of the article (e.g., BBC)
+- `author`: Author of the article
+- `category`: Category of the article (e.g., Technology, Sports)
+- `published_at`: Datetime when the article was published
+- `created_at` and `updated_at`: Timestamps
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### **API Endpoints**
+Defined in `routes/api.php`:
 
-## License
+1. **Fetch all articles**:
+   - `GET /api/articles`
+   - Supports pagination.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2. **Search and filter articles**:
+   - `GET /api/articles/search`
+   - Query parameters:
+     - `category`
+     - `source`
+     - `author`
+     - `keyword`
+     - `start_date`
+     - `end_date`
+   - Example: `/api/articles/search?category=technology&source=BBC&keyword=AI`
+
+### **Scheduler**
+Laravel’s scheduler periodically updates articles from the APIs. The command `fetch-news-command` is scheduled to run every minute:
+```php
+protected function schedule(Schedule $schedule)
+{
+    $schedule->command('fetch-news-command')->everyMinute();
+}
+```
+
+To test locally, you can run:
+```bash
+php artisan schedule:run
+```
+
+### **Error Handling**
+- API call failures are logged to `storage/logs/laravel.log`.
+
+## **Testing**
+
+- **Manual Testing**: Use tools like Postman to test API endpoints.
+- Example request:
+  ```bash
+  curl -X GET "http://localhost/api/articles/search?category=technology" -H "Accept: application/json"
+  ```
+
+## **Best Practices Followed**
+- DRY: Reused logic through `ArticleSaverService`.
+- SOLID: Separate responsibilities for fetching, saving, and processing data.
+- Validation: Ensured clean data inputs and handled API responses gracefully.
+
+## **Future Improvements**
+- Add user authentication to personalize article preferences.
+- Enhance filtering and sorting options.
+- Integrate additional news APIs for more content diversity.
+
+## **Contact**
+For further assistance, please contact [Your Name/Team] at [Your Email].
+
