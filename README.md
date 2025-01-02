@@ -50,8 +50,8 @@ DB_DATABASE=news_aggregator
 DB_USERNAME=root
 DB_PASSWORD=password
 
-NEWSAPI_KEY =your_newsapi_key
-GUARDIAN_API_KEY=your_guardiaNnkey
+NEWSAPI_KEY=d0be2fd8f7684a34a6e46cfb663b0ae7
+GUARDIAN_API_KEY=8gIUBmjXuQUQtyWzaSDhRpiDHcRRJhBK
 ```
 
 ### 4. Run Migrations
@@ -142,3 +142,7 @@ php artisan schedule:run
 - Add user authentication to personalize article preferences.
 - Enhance filtering and sorting options.
 - Integrate additional news APIs for more content diversity.
+
+## **Resources**
+- [NewaApi & BBC](https://newsapi.org/)
+- [The New York Times](https://developer.nytimes.com/).
